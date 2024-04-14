@@ -5,8 +5,8 @@ from shapely.wkb import loads
 # PostGIS database connection details
 dbname = 'gis5572'
 user = 'postgres'
-password = 'sami@2010'
-host = '34.71.94.96'  # Cloud DB Public IP address
+password = 'Hyderabad43%'
+host = '35.238.64.215'  # Cloud DB Public IP address
 port = '5432'
 
 app = Flask(__name__)
@@ -27,7 +27,7 @@ def get_temp_points():
             cursor = connection.cursor()
 
             # Define table name
-            table_name = 'idwtemppoints_in_sde'
+            table_name = 'mn_clean_weather'
 
             sql_query = f"SELECT shape FROM {table_name};"
             cursor.execute(sql_query)
@@ -59,7 +59,7 @@ def get_temp_accuracy():
             cursor = connection.cursor()
 
             # Define table name
-            table_name = 'accuracyassessmenttable'
+            table_name = 'diff_krigord_temp_points'
 
             sql_query = f"SELECT shape FROM {table_name};"
             cursor.execute(sql_query)
@@ -91,7 +91,7 @@ def get_elev_points():
             cursor = connection.cursor()
 
             # Define table name
-            table_name = 'idwelevationpoints_in_sde'
+            table_name = 'mndem_points_points'
 
             sql_query = f"SELECT shape FROM {table_name};"
             cursor.execute(sql_query)
@@ -123,7 +123,7 @@ def get_elev_accuracy():
             cursor = connection.cursor()
 
             # Define table name
-            table_name = 'accuracyelevation'
+            table_name = 'elev_ord_accuracy'
 
             sql_query = f"SELECT shape FROM {table_name};"
             cursor.execute(sql_query)
