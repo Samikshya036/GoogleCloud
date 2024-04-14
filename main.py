@@ -52,7 +52,7 @@ def database_to_geojson(table_name):
 def get_elevation_idw_geojson():
     try:
         # Call the database_to_geojson function
-        geojson_data = database_to_geojson("Idw_mn_temp_1_point")
+        geojson_data = database_to_geojson("Idwelevationpoints_in_sde")
         
         if geojson_data:
             return jsonify(geojson_data)
