@@ -1,0 +1,7 @@
+Flask==2.1.0
+shapely
+gunicorn==20.1.0
+sqlalchemy==2.0.3
+numpy==1.24
+psycopg2-binary
+Werkzeug==2.2.2
