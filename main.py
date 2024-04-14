@@ -17,7 +17,7 @@ def index():
 def database_to_geojson(table_name):
         # create connection to the DB
     conn = psycopg2.connect(
-        host = "104.197.211.53",
+        host = "34.132.34.153",
         database = "gis5572",
         user = "postgres",
         password = "sami@2010",
