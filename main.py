@@ -10,14 +10,14 @@ app = Flask(__name__)
 
 # create the index route
 @app.route('/') 
-def index(): 
+def index():
     return "The API is working!"
 
 # create a general DB to GeoJSON function
 def database_to_geojson(table_name):
         # create connection to the DB
     conn = psycopg2.connect(
-        host = "34.132.34.153",
+        host = " 34.31.152.38",
         database = "gis5572",
         user = "postgres",
         password = "sami@2010",
