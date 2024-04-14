@@ -51,25 +51,5 @@ def get_elevation_idw_geojson():
     # call our general function
     ele_idw = database_to_geojson("Idw_mn_temp_1_point")
     return ele_idw
-
-@app.route('/get_elevation_assessment_geojson', methods=['GET'])
-def get_elevation_assessment_geojson():
-    # call our general function
-    ele_assessment = database_to_geojson("sampled_diff_pts_idw")
-    return ele_assessment
-
-@app.route('/get_temperature_idw_geojson', methods=['GET'])
-def get_temperature_idw_geojson():
-    # call our general function
-    temp_idw = database_to_geojson("sampled_idw_pts_temp")
-    return temp_idw
-
-@app.route('/get_temperature_assessment_geojson', methods=['GET'])
-def get_temp_asse_geojson():
-    # call our general function
-    temp_asse = database_to_geojson("diff_idw_pts_temp")
-    return temp_asse
-
-
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
