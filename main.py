@@ -1,55 +1,65 @@
-import psycopg2
-from flask import Flask
+from flask import Flask, jsonify
 import os
-
+import psycopg2
+from psycopg2 import pool
+import sys
 
 # create the Flask app
-app = Flask(__name__) 
+app = Flask(__name__)
 
-# Connect to the PostgreSQL database
+# Database connection pool setup
+try:
+    postgreSQL_pool = psycopg2.pool.SimpleConnectionPool(1, 20,
+                                                         user=os.getenv("DB_USER", "postgres"),
+                                                         password=os.getenv("DB_PASSWORD", "your_password"),
+                                                         host=os.getenv("DB_HOST", "34.71.94.96"),
+                                                         port=os.getenv("DB_PORT", "5432"),
+                                                         database=os.getenv("DB_NAME", "gis5572"))
+except (Exception, psycopg2.DatabaseError) as error:
+    print("Error while connecting to PostgreSQL", error)
+    sys.exit(1)
 
-# create the index route
-@app.route('/') 
-def index(): 
+# Route to check if the API is working
+@app.route('/')
+def index():
     return "The API is working!"
 
-# create a general DB to GeoJSON function
+# Function to convert DB data to GeoJSON
 def database_to_geojson(table_name):
-        # create connection to the DB
-    conn = psycopg2.connect(
-        host = "34.71.94.96",
-        database = "gis5572",
-        user = "postgres",
-        password = "sami@2010",
-        port = "5432",
-    )
-    # retrieve the data
-    with conn.cursor() as cur:
-        query =f"""
-        SELECT JSON_BUILD_OBJECT(
-            'type', 'FeatureCollection',
-            'features', JSON_AGG(
-                ST_AsGeoJson({table_name}.*)::json
+    conn = None
+    try:
+        # get connection from the pool
+        conn = postgreSQL_pool.getconn()
+        if conn:
+            cur = conn.cursor()
+            query = f"""
+            SELECT JSON_BUILD_OBJECT(
+                'type', 'FeatureCollection',
+                'features', JSON_AGG(
+                    ST_AsGeoJson(t.*)::json
+                )
             )
-        )
-        FROM {table_name};
-        """
-        
-        cur.execute(query)
-        
-        data = cur.fetchall()
-    # close the connection
-    conn.close()
-    
-    # Returning the data
-    return data [0][0]
+            FROM {table_name} as t;
+            """
+            cur.execute(query)
+            data = cur.fetchall()
+            cur.close()
+            return data[0][0]
+    except (Exception, psycopg2.DatabaseError) as error:
+        print("Error while fetching data from PostgreSQL", error)
+        return {}
+    finally:
+        if conn:
+            postgreSQL_pool.putconn(conn)
 
-# create the data route
-
+# Route to get elevation data in GeoJSON format
 @app.route('/get_elevation_idw_geojson', methods=['GET'])
 def get_elevation_idw_geojson():
-    # call our general function
-    ele_idw = database_to_geojson("idwelevationpoints_in_sde")
-    return ele_idw
+    try:
+        ele_idw = database_to_geojson("idwelevationpoints_in_sde")
+        return jsonify(ele_idw)
+    except Exception as e:
+        return jsonify(error=str(e)), 500
+
 if __name__ == "__main__":
     app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 8080)))
